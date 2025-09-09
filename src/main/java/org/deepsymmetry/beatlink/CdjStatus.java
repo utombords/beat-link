@@ -836,7 +836,18 @@ public class CdjStatus extends DeviceUpdate {
     @API(status = API.Status.STABLE)
     public boolean isPlaying() {
         if (packetBytes.length >= 0xd4) {
-            return (packetBytes[STATUS_FLAGS] & PLAYING_FLAG) > 0;
+            // Primary Nexus-era playing flag
+            if ((packetBytes[STATUS_FLAGS] & PLAYING_FLAG) > 0) {
+                return true;
+            }
+            // Fallbacks when the main flag is not set but states indicate motion/playing
+            if (playState2 == PlayState2.MOVING || playState2 == PlayState2.OPUS_MOVING) {
+                return true;
+            }
+            if (playState1 == PlayState1.PLAYING || playState1 == PlayState1.LOOPING || playState1 == PlayState1.CUE_PLAYING) {
+                return true;
+            }
+            return false;
         } else {
             // Pre-nexus players don’t send this critical flag byte at all, so we always have to infer play state.
             return playState1 == PlayState1.PLAYING || playState1 == PlayState1.LOOPING ||
