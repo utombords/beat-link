@@ -1,0 +1,6 @@
+jdk:
+  - openjdk17
+install:
+  - mvn -q -DskipTests -Dmaven.javadoc.skip=true -Dgpg.skip=true install
+
+
